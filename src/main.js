@@ -459,6 +459,10 @@ const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };
 
+const createArray = (count) => {
+  return (new Array(count).fill(``));
+};
+
 const siteMainElement = document.querySelector(`.main`);
 const siteHeaderElemant = siteMainElement.querySelector(`.main__control`);
 
@@ -469,10 +473,8 @@ render(siteMainElement, createBoardTemplate(), `beforeend`);
 const taskListElement = siteMainElement.querySelector(`.board__tasks`);
 render(taskListElement, createTaskEditTemplate(), `beforeend`);
 
-new Array(TASK_COUNT)
-  .fill(``)
-  .forEach(() => render(taskListElement, createTaskTemplate(), `beforeend`)
-  );
+createArray(TASK_COUNT)
+  .forEach(() => render(taskListElement, createTaskTemplate(), `beforeend`));
 
 const boardElement = siteMainElement.querySelector(`.board`);
 render(boardElement, createLoadMoreButtonTemplate(), `beforeend`);
