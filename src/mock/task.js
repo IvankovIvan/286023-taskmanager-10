@@ -16,27 +16,34 @@ const DefaultRepeatingDays = {
   'su': false,
 };
 
-const Tags = new Set([
+const Tags = [
   `homework`,
   `theory`,
   `practice`,
   `intensive`,
   `keks`
-]);
+];
 
-const getRandomIntegerNumber = (min, max) => {
+const DAY_OF_WEEK = 6;
+const TAGS_MAX = 3;
+
+const getRandomIntegerNumber = (max, min = 0) => {
   return min + Math.round((max - min) * Math.random());
 };
 
 const getRandomArrayItem = (array) => {
-  const randomIndex = getRandomIntegerNumber(0, array.length - 1);
+  const randomIndex = getRandomIntegerNumber(array.length - 1);
   return array[randomIndex];
+};
+
+const getRandomBoolean = () => {
+  return Math.random() > 0.5;
 };
 
 const getRandomDate = () => {
   const targetDate = new Date();
-  const sign = Math.random() > 0.5 ? 1 : -1;
-  const diffValue = sign * getRandomIntegerNumber(0, 6);
+  const sign = getRandomBoolean() ? 1 : -1;
+  const diffValue = sign * getRandomIntegerNumber(DAY_OF_WEEK);
 
   targetDate.setDate(targetDate.getDate() + diffValue);
 
@@ -45,27 +52,27 @@ const getRandomDate = () => {
 
 const generateRepeatingDays = () => {
   return Object.assign({}, DefaultRepeatingDays, {
-    'mo': Math.random() > 0.5
+    'mo': getRandomBoolean()
   });
 };
 
-const genetateTags = (tags) => {
+const generateTags = (tags) => {
   return tags
-    .filter(() => Math.random() > 0.5)
-    .slice(0, getRandomIntegerNumber(0, 3));
+    .filter(getRandomBoolean)
+    .slice(0, getRandomIntegerNumber(TAGS_MAX));
 };
 
 const generateTask = () => {
-  const dueDate = Math.random() > 0.5 ? null : getRandomDate();
+  const dueDate = getRandomBoolean() ? null : getRandomDate();
 
   return {
     description: getRandomArrayItem(DescriptionItems),
     dueDate,
     repeatingDays: dueDate ? DefaultRepeatingDays : generateRepeatingDays(),
-    tags: new Set(genetateTags(Tags)),
+    tags: new Set(generateTags(Tags)),
     color: getRandomArrayItem(Colors),
-    isFavorite: Math.random() > 0.5,
-    isArchive: Math.random() > 0.5
+    isFavorite: getRandomBoolean(),
+    isArchive: getRandomBoolean()
   };
 };
 

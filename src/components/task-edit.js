@@ -43,7 +43,7 @@ const createRepeatingDaysMarkup = (days, repeatingDays) => {
     .join(`\n`);
 };
 
-const createHashtags = (tags) => {
+const createHashTags = (tags) => {
   return Array.from(tags)
     .map((tag) => {
       return (
@@ -70,7 +70,7 @@ export const createTaskEditTemplate = (task) => {
   const {description, tags, dueDate, color, repeatingDays} = task;
 
   const isExpired = dueDate instanceof Date && dueDate < Date.now();
-  const isDateShowing = !!dueDate;
+  const isDateShowing = Boolean(dueDate);
 
   const date = isDateShowing ? `${dueDate.getDate()}
   ${MonthNames[dueDate.getMonth()]}` : ``;
@@ -79,12 +79,13 @@ export const createTaskEditTemplate = (task) => {
   const repeatClass = isRepeatingTask ? `card--repeat` : ``;
   const deadlineClass = isExpired ? `card--deadline` : ``;
 
-  const tagsMarkup = createHashtags(tags);
+  const tagsMarkup = createHashTags(tags);
   const colorsMarkup = createColorsMarkup(Colors, color);
   const repeatingDaysMarkup = createRepeatingDaysMarkup(Days, repeatingDays);
 
   return (
-    `<article class="card card--edit card--${color} ${repeatClass}" ${deadlineClass}>
+    `<article 
+class="card card--edit card--${color} ${repeatClass}" ${deadlineClass}>
       <form class="card__form" method="get">
         <div class="card__inner">
           <div class="card__color-bar">
@@ -106,8 +107,10 @@ export const createTaskEditTemplate = (task) => {
           <div class="card__settings">
             <div class="card__details">
               <div class="card__dates">
-                <button class="card__date-deadline-toggle" type="button">
-                  date: <span class="card__date-status">${isDateShowing ? `yes` : `no`}</span>
+                <button 
+                class="card__date-deadline-toggle" type="button">
+                  date: <span class="card__date-status"
+                  >${isDateShowing ? `yes` : `no`}</span>
                 </button>
                 ${isDateShowing ?
       `<fieldset class="card__date-deadline">
@@ -123,7 +126,8 @@ export const createTaskEditTemplate = (task) => {
       </fieldset>` : ``}
 
                 <button class="card__repeat-toggle" type="button">
-                  repeat:<span class="card__repeat-status">${isRepeatingTask ? `yes` : `no`}</span>
+                  repeat:<span class="card__repeat-status"
+                  >${isRepeatingTask ? `yes` : `no`}</span>
                 </button>
                 ${isRepeatingTask ?
       `<fieldset class="card__repeat-days">
