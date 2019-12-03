@@ -1,69 +1,57 @@
 import {Colors, Days, MonthNames} from '../const.js';
 import {formatTime} from '../utils.js';
 
-const createColorsMarkup = (colors, currentColor) => {
-  return colors
-    .map((color) => {
-      return (
-        `<input
-          type="radio"
-          id="color-${color}-4"
-          class="card__color-input card__color-input--${color} visually-hidden"
-          name="color"
-          value="${color}"
-          ${currentColor === color ? `checked` : ``}
-        />
-        <label
-          for="color-${color}-4"
-          class="card__color card__color--${color}"
-          >${color}</label
-        >`
-      );
-    }).join(`\n`);
+const createColorsMarkup = (color, isColorChecked) => {
+  return (
+    `<input
+      type="radio"
+      id="color-${color}-4"
+      class="card__color-input card__color-input--${color} visually-hidden"
+      name="color"
+      value="${color}"
+      ${isColorChecked ? `checked` : ``}
+    />
+    <label
+      for="color-${color}-4"
+      class="card__color card__color--${color}"
+      >${color}</label
+    >`
+  );
 };
 
-const createRepeatingDaysMarkup = (days, repeatingDays) => {
-  return days
-    .map((day) => {
-      const isChecked = repeatingDays[day];
-      return (
-        `<input
-          class="visually-hidden card__repeat-day-input"
-          type="checkbox"
-          id="repeat-${day}-4"
-          name="repeat"
-          value="${day}"
-          ${isChecked ? `checked` : ``}
-        />
-        <label class="card__repeat-day" for="repeat-${day}-4"
-          >${day}</label
-        >`
-      );
-    })
-    .join(`\n`);
+const createRepeatingDaysMarkup = (day, isRepeatingChecked) => {
+  return (
+    `<input
+      class="visually-hidden card__repeat-day-input"
+      type="checkbox"
+      id="repeat-${day}-4"
+      name="repeat"
+      value="${day}"
+      ${isRepeatingChecked ? `checked` : ``}
+    />
+    <label class="card__repeat-day" for="repeat-${day}-4"
+      >${day}</label
+    >`
+  );
 };
 
-const createHashTags = (tags) => {
-  return Array.from(tags)
-    .map((tag) => {
-      return (
-        `<span class="card__hashtag-inner">
-          <input
-            type="hidden"
-            name="hashtag"
-            value="${tag}"
-            class="card__hashtag-hidden-input"
-          />
-          <p class="card__hashtag-name">
-            #${tag}
-          </p>
-          <button type="button" class="card__hashtag-delete">
-            delete
-          </button>
-        </span>`
-      );
-    })
-    .join(`\n`);
+const createHashTags = (tag) => {
+  return (
+    `<span class="card__hashtag-inner">
+      <input
+        type="hidden"
+        name="hashtag"
+        value="${tag}"
+        class="card__hashtag-hidden-input"
+      />
+      <p class="card__hashtag-name">
+        #${tag}
+      </p>
+      <button type="button" class="card__hashtag-delete">
+        delete
+      </button>
+    </span>`
+  );
 };
 
 export const createTaskEditTemplate = (task) => {
@@ -79,13 +67,23 @@ export const createTaskEditTemplate = (task) => {
   const repeatClass = isRepeatingTask ? `card--repeat` : ``;
   const deadlineClass = isExpired ? `card--deadline` : ``;
 
-  const tagsMarkup = createHashTags(tags);
-  const colorsMarkup = createColorsMarkup(Colors, color);
-  const repeatingDaysMarkup = createRepeatingDaysMarkup(Days, repeatingDays);
+  const tagsMarkup = Array.from(tags)
+      .map((tag) => createHashTags(tag))
+      .join(`\n`);
+
+  const colorsMarkup = Colors.map((currentColor
+  ) => createColorsMarkup(currentColor, currentColor === color))
+    .join(`\n`);
+
+  const repeatingDaysMarkup =
+    Days.map((day) => {
+      return createRepeatingDaysMarkup(day, repeatingDays[day]);
+    })
+      .join(`\n`);
 
   return (
-    `<article 
-class="card card--edit card--${color} ${repeatClass}" ${deadlineClass}>
+    `<article class="card card--edit card--${color}
+        ${repeatClass}" ${deadlineClass}>
       <form class="card__form" method="get">
         <div class="card__inner">
           <div class="card__color-bar">
@@ -107,23 +105,22 @@ class="card card--edit card--${color} ${repeatClass}" ${deadlineClass}>
           <div class="card__settings">
             <div class="card__details">
               <div class="card__dates">
-                <button 
+                <button
                 class="card__date-deadline-toggle" type="button">
                   date: <span class="card__date-status"
                   >${isDateShowing ? `yes` : `no`}</span>
                 </button>
-                ${isDateShowing ?
-      `<fieldset class="card__date-deadline">
-        <label class="card__input-deadline-wrap">
-          <input
-            class="card__date"
-            type="text"
-            placeholder=""
-            name="date"
-            value="${date} ${time}"
-          />
-        </label>
-      </fieldset>` : ``}
+                ${isDateShowing ? `<fieldset class="card__date-deadline">
+                    <label class="card__input-deadline-wrap">
+                      <input
+                        class="card__date"
+                        type="text"
+                        placeholder=""
+                        name="date"
+                        value="${date} ${time}"
+                      />
+                    </label>
+                  </fieldset>` : ``}
 
                 <button class="card__repeat-toggle" type="button">
                   repeat:<span class="card__repeat-status"
@@ -170,4 +167,5 @@ class="card card--edit card--${color} ${repeatClass}" ${deadlineClass}>
     </article>`
   );
 };
+
 
