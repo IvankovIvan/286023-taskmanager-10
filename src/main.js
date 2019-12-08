@@ -1,19 +1,14 @@
-//import {createSiteMenuTemplate} from './components/site-menu.js';
 import SiteMenuComponent from './components/site-menu.js';
-import {createFilterTemplate} from './components/filter.js';
-import {createBoardTemplate} from './components/board.js';
-import {createTaskTemplate} from './components/task.js';
-import {createTaskEditTemplate} from './components/task-edit.js';
-import {createLoadMoreButtonTemplate} from './components/load-more-button.js';
+import FilterComponent from './components/filter.js';
+import BoardComponent from './components/board.js';
+import TaskComponent from './components/task.js';
+import TaskEditComponent from './components/task-edit.js';
+import LoadMoreButtonComponent from './components/load-more-button.js';
 import {generateTasks} from './mock/task.js';
 import {generateFilters} from './mock/filter.js';
 import {TASK_COUNT, SHOWING_TASKS_COUNT_BY_BUTTON,
   SHOWING_TASKS_COUNT_ON_START} from './const.js';
 import {RenderPosition, renderElement} from './utils.js';
-
-const render = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
-};
 
 const clickButtonLoadMore = (element, showingTasksCount,
     taskListElement, tasks) => {
@@ -21,11 +16,13 @@ const clickButtonLoadMore = (element, showingTasksCount,
   showingTasksCount += SHOWING_TASKS_COUNT_BY_BUTTON;
 
   tasks.slice(prevTasksCount, showingTasksCount)
-    .forEach((task) => render(taskListElement, createTaskTemplate(task),
-        `beforeend`));
+    .forEach((task) => renderElement(taskListElement,
+        new TaskComponent(task).getElement(),
+        RenderPosition.BEFOREEND));
 
   if (showingTasksCount >= tasks.length) {
-    element.remove();
+    element.getElement().remove();
+    element.removeElement();
   }
   return showingTasksCount;
 };
@@ -33,28 +30,36 @@ const clickButtonLoadMore = (element, showingTasksCount,
 const siteMainElement = document.querySelector(`.main`);
 const siteHeaderElement = siteMainElement.querySelector(`.main__control`);
 
-// render(siteHeaderElement, createSiteMenuTemplate(), `beforeend`);
-renderElement(siteHeaderElement, new SiteMenuComponent().getElement(), RenderPosition.BEFOREEND);
+renderElement(siteHeaderElement, new SiteMenuComponent().getElement(),
+    RenderPosition.BEFOREEND);
 
 const filter = generateFilters();
-render(siteMainElement, createFilterTemplate(filter), `beforeend`);
-render(siteMainElement, createBoardTemplate(), `beforeend`);
+renderElement(siteMainElement, new FilterComponent(filter).getElement(),
+    RenderPosition.BEFOREEND);
 
-const taskListElement = siteMainElement.querySelector(`.board__tasks`);
+const boardComponent = new BoardComponent();
+renderElement(siteMainElement, boardComponent.getElement(),
+    RenderPosition.BEFOREEND);
+
+const taskListElement = boardComponent.getElement()
+  .querySelector(`.board__tasks`);
 const tasks = generateTasks(TASK_COUNT);
 
-render(taskListElement, createTaskEditTemplate(tasks[0]), `beforeend`);
+renderElement(taskListElement, new TaskEditComponent(tasks[0]).getElement(),
+    RenderPosition.BEFOREEND);
 
 let showingTasksCount = SHOWING_TASKS_COUNT_ON_START;
-tasks.slice(1, showingTasksCount).forEach((task) => render(taskListElement
-    , createTaskTemplate(task), `beforeend`));
+tasks.slice(1, showingTasksCount)
+  .forEach((task) => renderElement(taskListElement,
+      new TaskComponent(task).getElement(),
+      RenderPosition.BEFOREEND));
 
-const boardElement = siteMainElement.querySelector(`.board`);
-render(boardElement, createLoadMoreButtonTemplate(), `beforeend`);
+const loadMoreButtonComponent = new LoadMoreButtonComponent();
+renderElement(boardComponent.getElement(), loadMoreButtonComponent.getElement(),
+    RenderPosition.BEFOREEND);
 
-const loadMoreButton = boardElement.querySelector(`.load-more`);
-loadMoreButton
+loadMoreButtonComponent.getElement()
   .addEventListener(`click`, () => {
-    showingTasksCount = clickButtonLoadMore(loadMoreButton,
+    showingTasksCount = clickButtonLoadMore(loadMoreButtonComponent,
         showingTasksCount, taskListElement, tasks);
   });
