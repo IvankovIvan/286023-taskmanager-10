@@ -1,6 +1,6 @@
 import {createElement} from '../utils.js';
 
-const createSiteMenuTemplate = () => {
+export const createSiteMenuTemplate = () => {
   return (
     `<section class="control__btn-wrap">
       <input
@@ -43,7 +43,7 @@ export default class SiteMenu {
   }
 
   getElement() {
-    if (!this.getTemplate()) {
+    if (!this._element) {
       this._element = createElement(this.getTemplate());
     }
 

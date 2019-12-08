@@ -1,4 +1,5 @@
-import {createSiteMenuTemplate} from './components/site-menu.js';
+//import {createSiteMenuTemplate} from './components/site-menu.js';
+import SiteMenuComponent from './components/site-menu.js';
 import {createFilterTemplate} from './components/filter.js';
 import {createBoardTemplate} from './components/board.js';
 import {createTaskTemplate} from './components/task.js';
@@ -32,7 +33,8 @@ const clickButtonLoadMore = (element, showingTasksCount,
 const siteMainElement = document.querySelector(`.main`);
 const siteHeaderElement = siteMainElement.querySelector(`.main__control`);
 
-render(siteHeaderElement, createSiteMenuTemplate(), `beforeend`);
+// render(siteHeaderElement, createSiteMenuTemplate(), `beforeend`);
+renderElement(siteHeaderElement, new SiteMenuComponent().getElement(), RenderPosition.BEFOREEND);
 
 const filter = generateFilters();
 render(siteMainElement, createFilterTemplate(filter), `beforeend`);
