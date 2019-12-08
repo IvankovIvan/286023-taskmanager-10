@@ -10,15 +10,35 @@ import {TASK_COUNT, SHOWING_TASKS_COUNT_BY_BUTTON,
   SHOWING_TASKS_COUNT_ON_START} from './const.js';
 import {RenderPosition, renderElement} from './utils.js';
 
+const renderTask = (task) => {
+  const taskComponent = new TaskComponent(task);
+  const taskEditComponent = new TaskEditComponent(task);
+
+  const editButton = taskComponent.getElement()
+    .querySelector(`.card__btn--edit`);
+  editButton.addEventListener(`click`, () => {
+    taskListElement
+      .replaceChild(taskEditComponent.getElement(), taskComponent.getElement());
+  });
+
+  const editForm = taskEditComponent.getElement()
+    .querySelector(`form`);
+  editForm.addEventListener(`click`, () => {
+    taskListElement
+      .replaceChild(taskComponent.getElement(), taskEditComponent.getElement());
+  });
+
+  renderElement(taskListElement, taskComponent.getElement(),
+      RenderPosition.BEFOREEND);
+};
+
 const clickButtonLoadMore = (element, showingTasksCount,
     taskListElement, tasks) => {
   const prevTasksCount = showingTasksCount;
   showingTasksCount += SHOWING_TASKS_COUNT_BY_BUTTON;
 
   tasks.slice(prevTasksCount, showingTasksCount)
-    .forEach((task) => renderElement(taskListElement,
-        new TaskComponent(task).getElement(),
-        RenderPosition.BEFOREEND));
+    .forEach((task) => renderTask(task));
 
   if (showingTasksCount >= tasks.length) {
     element.getElement().remove();
@@ -43,16 +63,12 @@ renderElement(siteMainElement, boardComponent.getElement(),
 
 const taskListElement = boardComponent.getElement()
   .querySelector(`.board__tasks`);
+
 const tasks = generateTasks(TASK_COUNT);
 
-renderElement(taskListElement, new TaskEditComponent(tasks[0]).getElement(),
-    RenderPosition.BEFOREEND);
-
 let showingTasksCount = SHOWING_TASKS_COUNT_ON_START;
-tasks.slice(1, showingTasksCount)
-  .forEach((task) => renderElement(taskListElement,
-      new TaskComponent(task).getElement(),
-      RenderPosition.BEFOREEND));
+tasks.slice(0, showingTasksCount)
+  .forEach((task) => renderTask(task));
 
 const loadMoreButtonComponent = new LoadMoreButtonComponent();
 renderElement(boardComponent.getElement(), loadMoreButtonComponent.getElement(),
