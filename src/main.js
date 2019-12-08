@@ -8,6 +8,7 @@ import {generateTasks} from './mock/task.js';
 import {generateFilters} from './mock/filter.js';
 import {TASK_COUNT, SHOWING_TASKS_COUNT_BY_BUTTON,
   SHOWING_TASKS_COUNT_ON_START} from './const.js';
+import {RenderPosition, renderElement} from './utils.js';
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
