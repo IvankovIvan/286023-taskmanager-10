@@ -14,18 +14,40 @@ const renderTask = (task) => {
   const taskComponent = new TaskComponent(task);
   const taskEditComponent = new TaskEditComponent(task);
 
-  const editButton = taskComponent.getElement()
-    .querySelector(`.card__btn--edit`);
-  editButton.addEventListener(`click`, () => {
+  const onEscKeyDown = (evt) => {
+    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+    if (isEscKey) {
+      replaceEditToTask();
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
+  };
+
+  const replaceEditToTask = () => {
+    taskListElement
+      .replaceChild(taskComponent.getElement(), taskEditComponent.getElement());
+  };
+
+  const replaceTaskToEdit = () => {
     taskListElement
       .replaceChild(taskEditComponent.getElement(), taskComponent.getElement());
+  };
+
+  const editButton = taskComponent.getElement()
+    .querySelector(`.card__btn--edit`);
+
+  editButton.addEventListener(`click`, () => {
+    replaceTaskToEdit();
+    document.addEventListener(`keydown`, onEscKeyDown);
+    // taskListElement
+    //   .replaceChild(taskEditComponent.getElement(), taskComponent.getElement());
   });
 
   const editForm = taskEditComponent.getElement()
     .querySelector(`form`);
   editForm.addEventListener(`click`, () => {
-    taskListElement
-      .replaceChild(taskComponent.getElement(), taskEditComponent.getElement());
+    replaceEditToTask();
+    // taskListElement
+    //   .replaceChild(taskComponent.getElement(), taskEditComponent.getElement());
   });
 
   renderElement(taskListElement, taskComponent.getElement(),
