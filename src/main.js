@@ -45,7 +45,10 @@ const renderTask = (taskListElement, task) => {
 
   const editForm = taskEditComponent.getElement()
     .querySelector(`form`);
-  editForm.addEventListener(`click`, () => replaceEditToTask);
+  editForm.addEventListener(`click`, (evt) => {
+    evt.preventDefault();
+    replaceEditToTask();
+  });
 
   renderElement(taskListElement, taskComponent.getElement(),
       RenderPosition.BEFOREEND);
