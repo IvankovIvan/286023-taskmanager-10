@@ -66,27 +66,14 @@ const clickButtonLoadMore = (element, showingTasksCount,
   return showingTasksCount;
 };
 
-const siteMainElement = document.querySelector(`.main`);
-const siteHeaderElement = siteMainElement.querySelector(`.main__control`);
-
-renderElement(siteHeaderElement, new SiteMenuComponent().getElement(),
-    RenderPosition.BEFOREEND);
-
-const filter = generateFilters();
-renderElement(siteMainElement, new FilterComponent(filter).getElement(),
-    RenderPosition.BEFOREEND);
-
-const boardComponent = new BoardComponent();
-renderElement(siteMainElement, boardComponent.getElement(),
-    RenderPosition.BEFOREEND);
-
-const tasks = generateTasks(TASK_COUNT);
-const isAllTasksArchived = tasks.every((task) => task.isArchive);
-if (isAllTasksArchived) {
-  renderElement(boardComponent.getElement(),
-      new NoTasksComponent().getElement(),
-      RenderPosition.BEFOREEND);
-} else {
+const renderBoard = (boardComponent, tasks) => {
+  const isAllTasksArchived = tasks.every((task) => task.isArchive);
+  if (isAllTasksArchived) {
+    renderElement(boardComponent.getElement(),
+        new NoTasksComponent().getElement(),
+        RenderPosition.BEFOREEND);
+    return;
+  }
   renderElement(boardComponent.getElement(), new SortComponent().getElement(),
       RenderPosition.BEFOREEND);
   renderElement(boardComponent.getElement(), new TasksComponent().getElement(),
@@ -108,4 +95,22 @@ if (isAllTasksArchived) {
       showingTasksCount = clickButtonLoadMore(loadMoreButtonComponent,
           showingTasksCount, taskListElement, tasks);
     });
-}
+};
+
+const siteMainElement = document.querySelector(`.main`);
+const siteHeaderElement = siteMainElement.querySelector(`.main__control`);
+
+renderElement(siteHeaderElement, new SiteMenuComponent().getElement(),
+    RenderPosition.BEFOREEND);
+
+const filter = generateFilters();
+renderElement(siteMainElement, new FilterComponent(filter).getElement(),
+    RenderPosition.BEFOREEND);
+
+const boardComponent = new BoardComponent();
+renderElement(siteMainElement, boardComponent.getElement(),
+    RenderPosition.BEFOREEND);
+
+const tasks = generateTasks(TASK_COUNT);
+
+renderBoard(boardComponent, tasks);
