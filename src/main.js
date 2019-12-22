@@ -41,12 +41,7 @@ const renderTask = (taskListElement, task) => {
     document.addEventListener(`keydown`, onEscKeyDown);
   });
 
-  const editForm = taskEditComponent.getElement()
-    .querySelector(`form`);
-  editForm.addEventListener(`click`, (evt) => {
-    evt.preventDefault();
-    replaceEditToTask();
-  });
+  taskEditComponent.setSubmitHandler(replaceEditToTask());
 
   render(taskListElement, taskComponent,
       RenderPosition.BEFOREEND);
@@ -90,11 +85,15 @@ const renderBoard = (boardComponent, tasks) => {
   render(boardComponent.getElement(),
       loadMoreButtonComponent, RenderPosition.BEFOREEND);
 
-  loadMoreButtonComponent.getElement()
-    .addEventListener(`click`, () => {
-      showingTasksCount = clickButtonLoadMore(loadMoreButtonComponent,
-          showingTasksCount, taskListElement, tasks);
-    });
+  loadMoreButtonComponent.setClickHandler(() => {
+    showingTasksCount = clickButtonLoadMore(loadMoreButtonComponent,
+        showingTasksCount, taskListElement, tasks);
+  });
+  // loadMoreButtonComponent.getElement()
+  //   .addEventListener(`click`, () => {
+  //     showingTasksCount = clickButtonLoadMore(loadMoreButtonComponent,
+  //         showingTasksCount, taskListElement, tasks);
+  //   });
 };
 
 const siteMainElement = document.querySelector(`.main`);
