@@ -1,7 +1,10 @@
 import SiteMenuComponent from './components/site-menu.js';
 import FilterComponent from './components/filter.js';
 import BoardComponent from './components/board.js';
+import SortComponent from './components/sort.js';
 import TaskComponent from './components/task.js';
+import TasksComponent from './components/tasks.js';
+import NoTasksComponent from './components/no-tasks.js';
 import TaskEditComponent from './components/task-edit.js';
 import LoadMoreButtonComponent from './components/load-more-button.js';
 import {generateTasks} from './mock/task.js';
@@ -10,23 +13,39 @@ import {TASK_COUNT, SHOWING_TASKS_COUNT_BY_BUTTON,
   SHOWING_TASKS_COUNT_ON_START} from './const.js';
 import {RenderPosition, renderElement} from './utils.js';
 
-const renderTask = (task) => {
+const renderTask = (taskListElement, task) => {
   const taskComponent = new TaskComponent(task);
   const taskEditComponent = new TaskEditComponent(task);
 
-  const editButton = taskComponent.getElement()
-    .querySelector(`.card__btn--edit`);
-  editButton.addEventListener(`click`, () => {
+  const replaceEditToTask = () => {
+    taskListElement
+      .replaceChild(taskComponent.getElement(), taskEditComponent.getElement());
+  };
+
+  const replaceTaskToEdit = () => {
     taskListElement
       .replaceChild(taskEditComponent.getElement(), taskComponent.getElement());
+  };
+
+  const onEscKeyDown = (evt) => {
+    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+    if (isEscKey) {
+      replaceEditToTask();
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
+  };
+
+  const editButton = taskComponent.getElement()
+    .querySelector(`.card__btn--edit`);
+
+  editButton.addEventListener(`click`, () => {
+    replaceTaskToEdit();
+    document.addEventListener(`keydown`, onEscKeyDown);
   });
 
   const editForm = taskEditComponent.getElement()
     .querySelector(`form`);
-  editForm.addEventListener(`click`, () => {
-    taskListElement
-      .replaceChild(taskComponent.getElement(), taskEditComponent.getElement());
-  });
+  editForm.addEventListener(`click`, () => replaceEditToTask);
 
   renderElement(taskListElement, taskComponent.getElement(),
       RenderPosition.BEFOREEND);
@@ -38,7 +57,7 @@ const clickButtonLoadMore = (element, showingTasksCount,
   showingTasksCount += SHOWING_TASKS_COUNT_BY_BUTTON;
 
   tasks.slice(prevTasksCount, showingTasksCount)
-    .forEach((task) => renderTask(task));
+    .forEach((task) => renderTask(taskListElement, task));
 
   if (showingTasksCount >= tasks.length) {
     element.getElement().remove();
@@ -61,21 +80,32 @@ const boardComponent = new BoardComponent();
 renderElement(siteMainElement, boardComponent.getElement(),
     RenderPosition.BEFOREEND);
 
-const taskListElement = boardComponent.getElement()
-  .querySelector(`.board__tasks`);
-
 const tasks = generateTasks(TASK_COUNT);
+const isAllTasksArchived = tasks.every((task) => task.isArchive);
+if (isAllTasksArchived) {
+  renderElement(boardComponent.getElement(),
+      new NoTasksComponent().getElement(),
+      RenderPosition.BEFOREEND);
+} else {
+  renderElement(boardComponent.getElement(), new SortComponent().getElement(),
+      RenderPosition.BEFOREEND);
+  renderElement(boardComponent.getElement(), new TasksComponent().getElement(),
+      RenderPosition.BEFOREEND);
 
-let showingTasksCount = SHOWING_TASKS_COUNT_ON_START;
-tasks.slice(0, showingTasksCount)
-  .forEach((task) => renderTask(task));
+  const taskListElement =
+    boardComponent.getElement().querySelector(`.board__tasks`);
 
-const loadMoreButtonComponent = new LoadMoreButtonComponent();
-renderElement(boardComponent.getElement(), loadMoreButtonComponent.getElement(),
-    RenderPosition.BEFOREEND);
+  let showingTasksCount = SHOWING_TASKS_COUNT_ON_START;
+  tasks.slice(0, showingTasksCount)
+    .forEach((task) => renderTask(taskListElement, task));
 
-loadMoreButtonComponent.getElement()
-  .addEventListener(`click`, () => {
-    showingTasksCount = clickButtonLoadMore(loadMoreButtonComponent,
-        showingTasksCount, taskListElement, tasks);
-  });
+  const loadMoreButtonComponent = new LoadMoreButtonComponent();
+  renderElement(boardComponent.getElement(),
+      loadMoreButtonComponent.getElement(), RenderPosition.BEFOREEND);
+
+  loadMoreButtonComponent.getElement()
+    .addEventListener(`click`, () => {
+      showingTasksCount = clickButtonLoadMore(loadMoreButtonComponent,
+          showingTasksCount, taskListElement, tasks);
+    });
+}
