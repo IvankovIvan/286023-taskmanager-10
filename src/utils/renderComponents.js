@@ -10,7 +10,7 @@ export const createElement = (template) => {
   return newElement.firstChild;
 };
 
-export const render = (container, component, place) => {
+export const renderComponents = (container, component, place) => {
   switch (place) {
     case RenderPosition.AFTERBEGIN:
       container.prepend(component.getElement());
@@ -22,7 +22,7 @@ export const render = (container, component, place) => {
   }
 };
 
-export const remove = (component) => {
+export const removeComponent = (component) => {
   component.getElement().remove();
   component.removeElement();
 };

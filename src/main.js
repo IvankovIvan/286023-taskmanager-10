@@ -5,20 +5,20 @@ import BoardController from './controllers/board.js';
 import {generateTasks} from './mock/task.js';
 import {generateFilters} from './mock/filter.js';
 import {TASK_COUNT} from './const.js';
-import {RenderPosition, render} from './utils/render.js';
+import {RenderPosition, renderComponents} from './utils/renderComponents.js';
 
 const siteMainElement = document.querySelector(`.main`);
 const siteHeaderElement = siteMainElement.querySelector(`.main__control`);
 
-render(siteHeaderElement, new SiteMenuComponent(),
+renderComponents(siteHeaderElement, new SiteMenuComponent(),
     RenderPosition.BEFOREEND);
 
 const filter = generateFilters();
-render(siteMainElement, new FilterComponent(filter),
+renderComponents(siteMainElement, new FilterComponent(filter),
     RenderPosition.BEFOREEND);
 
 const boardComponent = new BoardComponent();
-render(siteMainElement, boardComponent,
+renderComponents(siteMainElement, boardComponent,
     RenderPosition.BEFOREEND);
 
 const tasks = generateTasks(TASK_COUNT);

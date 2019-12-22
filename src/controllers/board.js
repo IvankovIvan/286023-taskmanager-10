@@ -6,7 +6,8 @@ import SortComponent from '../components/sort.js';
 import NoTasksComponent from '../components/no-tasks.js';
 import {SHOWING_TASKS_COUNT_BY_BUTTON,
   SHOWING_TASKS_COUNT_ON_START} from '../const.js';
-import {RenderPosition, remove, replace, render} from "../utils/render";
+import {RenderPosition, removeComponent,
+  replace, renderComponents} from "../utils/renderComponents";
 
 const renderTask = (taskListElement, task) => {
   const taskComponent = new TaskComponent(task);
@@ -35,7 +36,7 @@ const renderTask = (taskListElement, task) => {
 
   taskEditComponent.setSubmitHandler(replaceEditToTask());
 
-  render(taskListElement, taskComponent, RenderPosition.BEFOREEND);
+  renderComponents(taskListElement, taskComponent, RenderPosition.BEFOREEND);
 
 };
 
@@ -54,12 +55,13 @@ export default class BoardController {
 
     const isAllTasksArchived = tasks.every((task) => task.isArchive);
     if (isAllTasksArchived) {
-      render(container, this._noTasksComponent, RenderPosition.BEFOREEND);
+      renderComponents(container, this._noTasksComponent,
+          RenderPosition.BEFOREEND);
       return;
     }
 
-    render(container, this._sortComponent, RenderPosition.BEFOREEND);
-    render(container, this._tasksComponent, RenderPosition.BEFOREEND);
+    renderComponents(container, this._sortComponent, RenderPosition.BEFOREEND);
+    renderComponents(container, this._tasksComponent, RenderPosition.BEFOREEND);
 
     const taskListElement = this._tasksComponent.getElement();
 
@@ -67,7 +69,8 @@ export default class BoardController {
     tasks.slice(0, showingTasksCount)
       .forEach((task) => renderTask(taskListElement, task));
 
-    render(container, this._loadMoreButtonComponent, RenderPosition.BEFOREEND);
+    renderComponents(container, this._loadMoreButtonComponent,
+        RenderPosition.BEFOREEND);
 
     this._loadMoreButtonComponent.setClickHandler(() => {
       const prevTasksCount = showingTasksCount;
@@ -77,7 +80,7 @@ export default class BoardController {
         .forEach((task) => renderTask(taskListElement, task));
 
       if (showingTasksCount >= tasks.length) {
-        remove(this._loadMoreButtonComponent);
+        removeComponent(this._loadMoreButtonComponent);
       }
     });
   }
